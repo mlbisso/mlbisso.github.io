@@ -28,7 +28,7 @@
       var socket = io('wss://integracion-tarea-3.herokuapp.com', { "path" : "/flights" });
       var socket_2 = io('wss://integracion-tarea-3.herokuapp.com', { "path" : "/flights" });
       var socket_3 = io('wss://integracion-tarea-3.herokuapp.com', { "path" : "/flights" });
-     
+      var ventana_info; 
       var markers_airports = [];
 
 
@@ -91,7 +91,7 @@
 
       function addAirport(msg) {
         var airports = Object.keys(msg);
-        var ventana_info = new google.maps.InfoWindow;
+        ventana_info = new google.maps.InfoWindow;
         var airport, i;
         for (i = 0; i < airports.length; i++){
           var pos = {lat: msg[airports[i]].airport_position[0], lng: msg[airports[i]].airport_position[1]}
@@ -160,7 +160,10 @@
             //   }       
             // } 
             var contenido = "hola";
-            var ventana_info = new google.maps.InfoWindow({
+          if (ventana_info != undefined){
+            ventana_info.close();
+          }
+            ventana_info = new google.maps.InfoWindow({
               content: contenido
                });
             ventana_info.open(map, markers_airports[i]);
@@ -180,7 +183,7 @@
           }
         })
         avion.addListener('click', function() {
-          map.setZoom(8);
+          // map.setZoom(8);
           map.setCenter(avion.getPosition());
 
           // for (i = 0; i < aviones.length; i++){
@@ -206,7 +209,10 @@
             }
           }
           var contenido = "<p>" + avion.label.text + "</p><p>" + plane_text + "</p><p>" + seat_text + " Asientos</p><p>Aerolinea"+ airline_text + "</p>" + "Posicion:" + avion.position;
-          var ventana_info = new google.maps.InfoWindow({
+          if (ventana_info != undefined){
+            ventana_info.close();
+          }
+          ventana_info = new google.maps.InfoWindow({
             content: contenido
              });
           ventana_info.open(map, avion);
