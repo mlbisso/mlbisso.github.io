@@ -21,6 +21,7 @@
 
       var map;
       var aviones = [];
+      var flights = [];
       var airport;
       var markers_aviones = [];
       var image;
@@ -84,6 +85,7 @@
             strokeWeight: 2
           });
           flightPath.setMap(map);
+          flights.push(msg);
         }
       }
 
@@ -188,7 +190,22 @@
           //     }
           //   }       
           // } 
-          var contenido = avion.label.text + "\n" + "\n" + "\n" + "Posicion:" + avion.position;
+                      // console.log("hola");
+            // console.log(avion.label.text);
+          var plane_text;
+          var seat_text;
+          var airline_text;
+          var j;
+          for (i = 0; i < flights.length ; i++){
+            for (j = 0; j < flights[i].length; j++){
+              if (flights[i][j].code == avion.label.text){
+                plane_text = flights[i][j].plane;
+                seat_text = flights[i][j].seats;
+                airline_text = flights[i][j].airline;
+              }
+            }
+          }
+          var contenido = "<p>" + avion.label.text + "</p><p>" + plane_text + "</p><p>" + seat_text + " Asientos</p><p>Aerolinea "+ airline_text + "</p>" + "Posicion:" + avion.position;
           var ventana_info = new google.maps.InfoWindow({
             content: contenido
              });
