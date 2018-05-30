@@ -14,7 +14,6 @@
     </style>
   </head>
   <body>
-    <h3>My Google Maps Demo</h3>
     <div id="map"></div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
     <script>
@@ -30,6 +29,7 @@
       var socket_3 = io('wss://integracion-tarea-3.herokuapp.com', { "path" : "/flights" });
       var ventana_info; 
       var markers_airports = [];
+      var aeropuertos = [];
 
 
       function initMap() {
@@ -53,14 +53,16 @@
         socket_2.emit('AIRPORTS', {});
 
         socket_2.on('AIRPORTS', function(msg){
-          // console.log(msg)
-          addAirport(msg)
+          var airports = Object.keys(msg);
+          for (i = 0; i < airports.length; i ++){
+            addAirport(msg[airports[i]]);
+          }
         });
 
         socket_3.emit('FLIGHTS', {});
 
         socket_3.on('FLIGHTS', function(msg){
-          console.log(msg)
+          // console.log(msg)
           addFlight(msg)
         });
 
@@ -90,29 +92,118 @@
       }
 
       function addAirport(msg) {
-        var airports = Object.keys(msg);
-        ventana_info = new google.maps.InfoWindow;
-        var airport, i;
-        for (i = 0; i < airports.length; i++){
-          var pos = {lat: msg[airports[i]].airport_position[0], lng: msg[airports[i]].airport_position[1]}
-          airport = new google.maps.Marker({
+        console.log(msg);
+        // var airports = Object.keys(msg);
+        // ventana_info = new google.maps.InfoWindow;
+        var pos = {lat: msg.airport_position[0], lng: msg.airport_position[1]}
+          // console.log(pos);
+        var airport = new google.maps.Marker({
             position: pos,
             map: map,
             label: {
               fontSize: "0px",
-              text: msg[airports[i]].name + "\n" + msg[airports[i]].city
+              text: "<p> " + msg.name + "</p><p>" + msg.city + "</p><p>" + msg.airport_code + "</p>"
             }
           })
-          // markers.add(airport);
-          airport.addListener(airport, 'click', (function(airport, i) {
-            return function(){
-              // map.setZoom(8);
-              // map.setCenter(airport.getPosition());
-              var contenido = "hola";
-              ventana_info.setContent(contenido);
-              ventana_info.open(map, airport);    
-            }
-            }));
+        aeropuertos.push(msg);
+        markers_airports.push(airport);
+        // }
+        airport.addListener('click', function() {
+          map.setZoom(8);
+          map.setCenter(airport.getPosition());
+
+          // for (i = 0; i < aviones.length; i++){
+          //   if(aviones[i] != undefined){
+          //     if (aviones[i].code == avion){
+
+          //     }
+          //   }       
+          // } 
+                      // console.log("hola");
+            // console.log(avion.label.text);
+          // var plane_text;
+          // var seat_text;
+          // var airline_text;
+          // var j;
+          // for (i = 0; i < flights.length ; i++){
+          //   for (j = 0; j < flights[i].length; j++){
+          //     if (flights[i][j].code == avion.label.text){
+          //       plane_text = flights[i][j].plane;
+          //       seat_text = flights[i][j].seats;
+          //       airline_text = flights[i][j].airline;
+          //     }
+          //   }
+          // }
+          var contenido = airport.label.text;
+          if (ventana_info != undefined){
+            ventana_info.close();
+          }
+          ventana_info = new google.maps.InfoWindow({
+            content: contenido
+             });
+          ventana_info.open(map, airport);
+        });
+      }
+        // for (i = 0; i < markers_airports.length; i ++){
+        //   var arp = markers_airports[i]
+        //   google.maps.event.addListener(markers_airports[i], 'click', function(){
+        //     // console.log(arp)
+        //     map.setZoom(8);
+        //     map.setCenter(arp.getPosition());
+        //     // console.log(aeropuertos[i]);
+        //   })
+            // console.log(aeropuertos[i]);
+            // aeropuertos[i].addListener('click', function(){
+            // map.setCenter(aeropuertos[i].getPosition());
+            // console.log("malo");           
+            // });
+    
+
+        // }
+        // avion.addListener('click', function() {
+        //   // map.setZoom(8);
+
+        //   // for (i = 0; i < aviones.length; i++){
+        //   //   if(aviones[i] != undefined){
+        //   //     if (aviones[i].code == avion){
+
+        //   //     }
+        //   //   }       
+        //   // } 
+        //               // console.log("hola");
+        //     // console.log(avion.label.text);
+        //   var plane_text;
+        //   var seat_text;
+        //   var airline_text;
+        //   var j;
+        //   for (i = 0; i < flights.length ; i++){
+        //     for (j = 0; j < flights[i].length; j++){
+        //       if (flights[i][j].code == avion.label.text){
+        //         plane_text = flights[i][j].plane;
+        //         seat_text = flights[i][j].seats;
+        //         airline_text = flights[i][j].airline;
+        //       }
+        //     }
+        //   }
+        //   var contenido = "<p>" + avion.label.text + "</p><p>" + plane_text + "</p><p>" + seat_text + " Asientos</p><p>Aerolinea"+ airline_text + "</p>" + "Posicion:" + avion.position;
+        //   if (ventana_info != undefined){
+        //     ventana_info.close();
+        //   }
+        //   ventana_info = new google.maps.InfoWindow({
+        //     content: contenido
+        //      });
+        //   ventana_info.open(map, avion);
+        // });
+          // markers.push(airport);
+          // airport.addListener(airport, 'click', (function(airport, i) {
+          //   return function(){
+          //     // map.setZoom(8);
+          //     // map.setCenter(airport.getPosition());
+          //     var contenido = "hola";
+          //     ventana_info.setContent(contenido);
+          //     ventana_info.open(map, airport);    
+          //   }
+          //   }));
 
           //   // for (i = 0; i < aviones.length; i++){
           //   //   if(aviones[i] != undefined){
@@ -145,31 +236,30 @@
           //   aviones.push(msg);
           //   markers_aviones.push(avion);          
           // }
-        }
-        for (i = 0 ; i < markers_airports.length; i++){
-          console.log(markers_airports[i])
-          markers_airports[i].addListener('click', function() {
-            map.setZoom(8);
-            // map.setCenter(markers_airports[i].getPosition());
+        // }
+        // for (i = 0 ; i < markers_airports.length; i++){
+        //   // console.log(markers_airports[i])
+        //   markers_airports[i].addListener('click', function() {
+        //     map.setZoom(8);
+        //     // map.setCenter(markers_airports[i].getPosition());
 
-            // for (i = 0; i < aviones.length; i++){
-            //   if(aviones[i] != undefined){
-            //     if (aviones[i].code == avion){
+        //     // for (i = 0; i < aviones.length; i++){
+        //     //   if(aviones[i] != undefined){
+        //     //     if (aviones[i].code == avion){
 
-            //     }
-            //   }       
-            // } 
-            var contenido = "hola";
-          if (ventana_info != undefined){
-            ventana_info.close();
-          }
-            ventana_info = new google.maps.InfoWindow({
-              content: contenido
-               });
-            ventana_info.open(map, markers_airports[i]);
-          });
-        }
-      }
+        //     //     }
+        //     //   }       
+        //     // } 
+        //     var contenido = "hola";
+        //   if (ventana_info != undefined){
+        //     ventana_info.close();
+        //   }
+        //     ventana_info = new google.maps.InfoWindow({
+        //       content: contenido
+        //        });
+        //     ventana_info.open(map, markers_airports[i]);
+        //   });
+        // }
 
       function addAvion(msg) {
         var pos = {lat: msg.position[0], lng: msg.position[1]}
@@ -183,7 +273,7 @@
           }
         })
         avion.addListener('click', function() {
-          // map.setZoom(8);
+          map.setZoom(8);
           map.setCenter(avion.getPosition());
 
           // for (i = 0; i < aviones.length; i++){
@@ -208,7 +298,7 @@
               }
             }
           }
-          var contenido = "<p>" + avion.label.text + "</p><p>" + plane_text + "</p><p>" + seat_text + " Asientos</p><p>Aerolinea"+ airline_text + "</p>" + "Posicion:" + avion.position;
+          var contenido = "<p>" + avion.label.text + "</p><p>" + plane_text + "</p><p>" + seat_text + " Asientos</p><p>Aerolinea "+ airline_text + "</p>" + "Posicion:" + avion.position;
           if (ventana_info != undefined){
             ventana_info.close();
           }
